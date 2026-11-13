@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aditya Ranganath">
 
 <title>OpenAlex Audit of CU Boulder Datasets</title>
 <style>
@@ -74,10 +75,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </head>
 
-<body class="fullcontent quarto-light">
+<body class="quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#cu-scholar" id="toc-cu-scholar" class="nav-link active" data-scroll-target="#cu-scholar"><span class="header-section-number">1</span> CU Scholar</a></li>
+  <li><a href="#datasets-authored-by-cu-researchers-in-other-venues" id="toc-datasets-authored-by-cu-researchers-in-other-venues" class="nav-link" data-scroll-target="#datasets-authored-by-cu-researchers-in-other-venues"><span class="header-section-number">2</span> Datasets authored by CU researchers in other venues</a></li>
+  <li><a href="#exploratory-analysis-and-visualization" id="toc-exploratory-analysis-and-visualization" class="nav-link" data-scroll-target="#exploratory-analysis-and-visualization"><span class="header-section-number">3</span> Exploratory Analysis and Visualization</a>
+  <ul class="collapse">
+  <li><a href="#most-cited-datasets-with-a-cu-author" id="toc-most-cited-datasets-with-a-cu-author" class="nav-link" data-scroll-target="#most-cited-datasets-with-a-cu-author"><span class="header-section-number">3.1</span> Most cited datasets with a CU author</a></li>
+  <li><a href="#repository-destinations-for-cu-authored-datasets" id="toc-repository-destinations-for-cu-authored-datasets" class="nav-link" data-scroll-target="#repository-destinations-for-cu-authored-datasets"><span class="header-section-number">3.2</span> Repository destinations for CU-authored datasets</a></li>
+  <li><a href="#number-of-dataset-publications-by-cu-author" id="toc-number-of-dataset-publications-by-cu-author" class="nav-link" data-scroll-target="#number-of-dataset-publications-by-cu-author"><span class="header-section-number">3.3</span> Number of dataset publications by CU author</a></li>
+  <li><a href="#total-dataset-citations-by-cu-author" id="toc-total-dataset-citations-by-cu-author" class="nav-link" data-scroll-target="#total-dataset-citations-by-cu-author"><span class="header-section-number">3.4</span> Total dataset citations, by CU author</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -89,6 +106,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Aditya Ranganath </p>
+          </div>
+  </div>
     
   
     
@@ -107,8 +130,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load OpenAlex API key</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">openalexR.apikey =</span> <span class="fu">Sys.getenv</span>(<span class="st">"OPENALEX_API_KEY"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<section id="cu-scholar" class="level1">
-<h1>CU Scholar</h1>
+<section id="cu-scholar" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> CU Scholar</h1>
 <p>We start by extracting CU Scholar datasets in OpenAlex. First, we’ll extract the CU Scholar’s OpenAlex ids.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extracts CU Scholar source information</span></span>
@@ -170,8 +193,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(cu_scholar_datasets_alternate, <span class="st">"data-outputs/cu_scholar_datasets_alternate.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="datasets-authored-by-cu-researchers-in-other-venues" class="level1">
-<h1>Datasets authored by CU researchers in other venues</h1>
+<section id="datasets-authored-by-cu-researchers-in-other-venues" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Datasets authored by CU researchers in other venues</h1>
 <p>To extract datasets published by CU researchers in any location, we’ll extract CU Boulder’s institutional ID in Open Alex, and then carry out a dataset search within <code>oa_fetch()</code> using this ID:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extracts CU Boulder institutional information and assigns to "cu_boulder_metadata"</span></span>
@@ -413,9 +436,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(cu_datasets_comprehensive, <span class="st">"data-outputs/cu_datasets_comprehensive.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="exploratory-analysis-and-visualization" class="level1">
-<h1>Exploratory Analysis and Visualization</h1>
+<section id="exploratory-analysis-and-visualization" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Exploratory Analysis and Visualization</h1>
 <p>We’ll use <code>cu_datasets_comprehensive</code> as the basis for some basic exploratory analysis and visualization, since it’s the most comprehensive dataset we’ve generated.</p>
+<section id="most-cited-datasets-with-a-cu-author" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="most-cited-datasets-with-a-cu-author"><span class="header-section-number">3.1</span> Most cited datasets with a CU author</h2>
 <p>First, we’ll plot the titles of the five most cited datasets with a CU author:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generates dataset of top five papers</span></span>
@@ -456,6 +481,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
+<section id="repository-destinations-for-cu-authored-datasets" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="repository-destinations-for-cu-authored-datasets"><span class="header-section-number">3.2</span> Repository destinations for CU-authored datasets</h2>
 <p>Now, we’ll examine the number of CU-authored datasets by repository/publication venue:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generates dataset that indicates number of datasets published in each repo/venue</span></span>
@@ -526,7 +554,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Next, we will generate a dataset that indicates the number of dataset publications associated with each CU author, assigned to <code>cu_researcher_dataset_publication_number</code>:</p>
+</section>
+<section id="number-of-dataset-publications-by-cu-author" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="number-of-dataset-publications-by-cu-author"><span class="header-section-number">3.3</span> Number of dataset publications by CU author</h2>
+<p>Next, we will generate a dataset that indicates the total number of dataset publications associated with each CU author, assigned to <code>cu_researcher_dataset_publication_number</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generates dataset that indicates number of dataset publications for each CU author</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>cu_researcher_dataset_publication_number<span class="ot">&lt;-</span></span>
@@ -601,6 +632,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
+<section id="total-dataset-citations-by-cu-author" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="total-dataset-citations-by-cu-author"><span class="header-section-number">3.4</span> Total dataset citations, by CU author</h2>
 <p>Finally, we will generate a dataset of the total number of dataset citations for each CU researcher:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generates dataset that indicates CU authors and their total dataset citations</span></span>
@@ -657,6 +691,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
 </section>
 
 </main>

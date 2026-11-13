@@ -1,6 +1,13 @@
 ---
 title: "OpenAlex Audit of CU Boulder Datasets"
-format: html
+author: "Aditya Ranganath"
+format: 
+  html:
+    toc: true 
+    toc-depth: 2
+    toc-expand: 2
+    number-sections: true
+    number-depth: 3
 editor: visual
 ---
 
@@ -294,6 +301,8 @@ write_csv(cu_datasets_comprehensive, "data-outputs/cu_datasets_comprehensive.csv
 
 We'll use `cu_datasets_comprehensive` as the basis for some basic exploratory analysis and visualization, since it's the most comprehensive dataset we've generated.
 
+## Most cited datasets with a CU author
+
 First, we'll plot the titles of the five most cited datasets with a CU author:
 
 ```{r}
@@ -331,6 +340,8 @@ top_papers_plot<-
 top_papers_plot
 
 ```
+
+## Repository destinations for CU-authored datasets
 
 Now, we'll examine the number of CU-authored datasets by repository/publication venue:
 
@@ -387,7 +398,9 @@ top_repos_plot<-
 top_repos_plot
 ```
 
-Next, we will generate a dataset that indicates the number of dataset publications associated with each CU author, assigned to `cu_researcher_dataset_publication_number`:
+## Number of dataset publications by CU author
+
+Next, we will generate a dataset that indicates the total number of dataset publications associated with each CU author, assigned to `cu_researcher_dataset_publication_number`:
 
 ```{r}
 # generates dataset that indicates number of dataset publications for each CU author
@@ -446,6 +459,8 @@ cu_researcher_dataset_publication_number_plot<-
 # prints "cu_researcher_dataset_publication_number_plot"
 cu_researcher_dataset_publication_number_plot
 ```
+
+## Total dataset citations, by CU author
 
 Finally, we will generate a dataset of the total number of dataset citations for each CU researcher:
 
