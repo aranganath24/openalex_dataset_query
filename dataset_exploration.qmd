@@ -1,5 +1,5 @@
 ---
-title: "OpenAlex Audit of CU Boulder Datasets"
+title: "OpenAlex Audit of Datasets Published by CU Boulder Researchers"
 author: "Aditya Ranganath"
 format: 
   html:
