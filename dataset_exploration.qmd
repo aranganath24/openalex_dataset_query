@@ -297,6 +297,8 @@ We'll use `cu_datasets_comprehensive` as the basis for some basic exploratory an
 First, we'll plot the titles of the five most cited datasets with a CU author:
 
 ```{r}
+#| fig-width: 10
+#| fig-height: 5
 # generates dataset of top five papers
 top_papers_dataset<-
   cu_datasets_comprehensive %>% 
@@ -355,6 +357,8 @@ write_csv(dataset_count_by_repo, "data-outputs/dataset_count_by_repo.csv")
 We'll also create a chart that displays the 20 most commonly used repositories:
 
 ```{r}
+#| fig-width: 13
+#| fig-height: 8
 # generates dataset of top ten repos
 top_repos_dataset<-
   dataset_count_by_repo %>% 
@@ -383,20 +387,120 @@ top_repos_plot<-
 top_repos_plot
 ```
 
-**researchers with most cited datasets**
+Next, we will generate a dataset that indicates the number of dataset publications associated with each CU author, assigned to `cu_researcher_dataset_publication_number`:
 
-<https://publishing.escholarship.umassmed.edu/jeslib/article/id/1170/>
+```{r}
+# generates dataset that indicates number of dataset publications for each CU author
+cu_researcher_dataset_publication_number<-
+  cu_datasets_comprehensive %>% 
+separate_longer_delim(cols=c(cu_authors_oa_id, cu_authors_name, id), delim="; ") %>%
+   mutate(cu_authors_oa_id = trimws(cu_authors_oa_id)) %>%
+  distinct() %>% 
+  group_by(cu_authors_oa_id)  %>% 
+  summarise(
+    cu_authors_name=first(cu_authors_name),
+    dataset_count=n(),
+    .groups="drop") %>%
+  filter(cu_authors_oa_id!="") %>% 
+  arrange(desc(dataset_count))
 
-most cited CU-Authored datasets
+# prints "cu_researcher_dataset_publication_number"
+cu_researcher_dataset_publication_number
+```
 
-most frequently used repos/destinations
+We will write out the full dataset to disk:
 
-researchers with most cited datasets
+```{r}
+# writes "cu_researcher_dataset_publication_number" to disk
+write_csv(cu_researcher_dataset_publication_number, "data-outputs/cu_researcher_dataset_publication_number.csv")
+```
 
-researchers with largest quantity of datasets
+Below, we plot the ten 10 CU researchers with the highest number of total dataset publications in any venue:
 
-frequent external collaborators on CU datasets
+```{r}
+#| fig-width: 13
+#| fig-height: 8
+# generates dataset of top ten dataset publsihers
+top_cu_dataset_publishers<-
+  cu_researcher_dataset_publication_number %>% 
+              slice_max(dataset_count, n=10) %>% 
+              mutate(wrapped_title=str_wrap(cu_authors_name, width=45))
 
-take keywords and make wordcloud
+# generates plot based on "top_cu_dataset_publishers"
+cu_researcher_dataset_publication_number_plot<-
+  ggplot(data=top_cu_dataset_publishers, aes(x=dataset_count, y=fct_reorder(wrapped_title, dataset_count)))+
+  geom_col(fill="#003A70", width=0.6)+
+  geom_text(aes(label=dataset_count), hjust=-0.2, fontface="bold", size=4)+
+  theme_minimal(base_size=13)+
+  labs(
+    title="CU Researchers with most dataset publications",
+    x="Total Number of Datasets Published",
+    y=""
+  )+
+  theme(panel.grid.major.y=element_blank(),
+        plot.title=element_text(face="bold", size=16),
+        axis.text.x = element_blank(),
+        axis.text.y=element_text(lineheight=0.9, color="black")
+  )
 
-# Basic Visualizations
+# prints "cu_researcher_dataset_publication_number_plot"
+cu_researcher_dataset_publication_number_plot
+```
+
+Finally, we will generate a dataset of the total number of dataset citations for each CU researcher:
+
+```{r}
+# generates dataset that indicates CU authors and their total dataset citations
+cu_researcher_dataset_citations<-
+  cu_datasets_comprehensive %>% 
+  separate_longer_delim(cols=c(cu_authors_oa_id, cu_authors_name, id), delim="; ") %>%
+  mutate(cu_authors_oa_id = trimws(cu_authors_oa_id)) %>%
+  distinct() %>% 
+  group_by(cu_authors_oa_id)  %>% 
+  summarise(
+    cu_authors_name=first(cu_authors_name),
+    number_of_dataset_citations=sum(cited_by_count),
+    .groups="drop") %>%
+  filter(cu_authors_oa_id!="") %>% 
+  arrange(desc(number_of_dataset_citations))
+
+```
+
+We'll write `cu_researcher_dataset_citations` to disk:
+
+```{r}
+# writes "cu_researcher_dataset_citations" to disk
+write_csv(cu_researcher_dataset_citations, "data-outputs/cu_researcher_dataset_citations.csv")
+```
+
+Below, we create a plot that shows CU researchers with the most dataset citations:
+
+```{r}
+#| fig-width: 13
+#| fig-height: 8
+# generates dataset of top ten repos
+cu_authors_with_most_data_citations<-
+  cu_researcher_dataset_citations %>% 
+              slice_max(number_of_dataset_citations, n=10) %>% 
+              mutate(wrapped_title=str_wrap(cu_authors_name, width=45))
+
+# generates plot based on "top_repos_dataset"
+cu_researcher_dataset_publication_number_plot<-
+  ggplot(data=cu_authors_with_most_data_citations, aes(x=number_of_dataset_citations, y=fct_reorder(wrapped_title, number_of_dataset_citations)))+
+  geom_col(fill="#003A70", width=0.6)+
+  geom_text(aes(label=number_of_dataset_citations), hjust=-0.2, fontface="bold", size=4)+
+  theme_minimal(base_size=13)+
+  labs(
+    title="CU Researchers with most dataset citations",
+    x="Total Number of Dataset Citations",
+    y=""
+  )+
+  theme(panel.grid.major.y=element_blank(),
+        plot.title=element_text(face="bold", size=16),
+        axis.text.x = element_blank(),
+        axis.text.y=element_text(lineheight=0.9, color="black")
+  )
+
+# prints "top_repos_plot"
+cu_researcher_dataset_publication_number_plot
+```
