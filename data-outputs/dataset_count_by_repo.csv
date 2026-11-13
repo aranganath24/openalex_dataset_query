@@ -1,12 +1,12 @@
 repo,n
 DOE Pacific Northwest National Laboratory (PNNL) Repository,4663
 OSTI OAI (U.S. Department of Energy Office of Scientific and Technical Information),2198
-Figshare,1938
+Figshare,1939
 The Cambridge Structural Database,1229
-Zenodo (CERN European Organization for Nuclear Research),1045
+Zenodo (CERN European Organization for Nuclear Research),1052
 PsycEXTRA Dataset,722
 CU Scholar (University of Colorado Boulder),532
-Harvard Dataverse,292
+Harvard Dataverse,296
 Worldwide Protein Data Bank,282
 EBAS,229
 PsycTESTS Dataset,215
@@ -17,7 +17,7 @@ The Catalogue of Life,110
 DRYAD,75
 HydroShare Resources,71
 Global Biodiversity Information Facility,70
-UC Santa Barbara,63
+UC Santa Barbara,64
 Default Digital Object Group,56
 ICPSR Data Holdings,50
 AEA Randomized Controlled Trials,48
@@ -40,17 +40,17 @@ Biological Magnetic Resonance Bank,14
 HEPData,13
 King Abdullah University of Science and Technology Repository (King Abdullah University of Science and Technology),13
 CORA.Repositori de Dades de Recerca,12
+DOE Lawrence Berkeley National Laboratory (LBNL) Repository,11
 EMPIAR dataset,11
 Space Physics Data Facility,11
-DOE Lawrence Berkeley National Laboratory (LBNL) Repository,10
 Lincoln (University of Nebraska),10
 AIP Publishing,9
 Apollo (University of Cambridge),9
+Carbon Dioxide Information Analysis Center (CDIAC) Datasets,9
 Earth Observing System Data and Information System,9
 Forest Service Research Data Archive,9
 INCLUDE Data Hub,9
 NSF Geodetic Facility for the Advancement of Geoscience (GAGE),9
-Carbon Dioxide Information Analysis Center (CDIAC) Datasets,8
 NERC Environmental Data Service,8
 NHLBI BioData Catalyst,8
 Small Bodies Node SBN of NASA's Planetary Data System (PDS)- Archives,7
@@ -81,6 +81,7 @@ The Digital Archeological Record (tDAR),4
 nano Online,4
 EarthChem Library,3
 Historical Statistics of the United States: Millennial Edition Online,3
+Lasso NBDC Data Repository,3
 MorphoBank datasets,3
 National Snow and Ice Data Center,3
 Recherche Data Gouv France,3
@@ -101,7 +102,6 @@ Data Commons,2
 HubZero,2
 Institutional Repositories DataBase (IRDB),2
 J. Willard Marriott Library,2
-Lasso NBDC Data Repository,2
 "National Institutes of Health, National Institute on Aging Genetics of Alzheimer's Disease Data Storage Site",2
 Open Research Knowledge Graph (ORKG),2
 PsycTHERAPY Dataset,2

@@ -8,6 +8,11 @@ format:
     toc-expand: 2
     number-sections: true
     number-depth: 3
+  pdf:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    number-depth: 3
 editor: visual
 ---
 
@@ -28,6 +33,8 @@ We start by extracting CU Scholar datasets in OpenAlex. First, we'll extract the
 
 ```{r}
 #| cache: true
+#| message: false
+#| warning: false 
 # extracts CU Scholar source information
 cu_scholar_source<-oa_fetch(
   entity = "sources",
@@ -49,7 +56,10 @@ Now, we'll use the ID information to extract CU Scholar datasets:
 
 ```{r}
 #| cache: true
-# extract cu scholar datasets and assign the result to "cu_scholar_datasets_base"
+#| message: false
+#| warning: false
+# extract cu scholar datasets and assign the result to 
+# "cu_scholar_datasets_base"
 cu_scholar_datasets_base <- oa_fetch(
   entity = "works",
   "locations.source.id" = combined_ids_string,
@@ -61,7 +71,8 @@ We will write this dataset to a file named *cu_scholar_datasets_base.csv*:
 
 ```{r}
 # writes "cu_scholar_datasets_base" to disk
-write_csv(cu_scholar_datasets_base, "data-outputs/cu_scholar_datasets_base.csv")
+write_csv(cu_scholar_datasets_base, 
+          "data-outputs/cu_scholar_datasets_base.csv")
 ```
 
 `cu_scholar_datasets_base` contains 470 records/datasets, which is significantly less than the 657 datasets reported in the latest State of Open report. This might be driven by a mismatch between how objects are classified in CU Scholar and how they are classified by Open Alex (i.e. the "dataset" filter might be overly restrictive if OpenAlex interprets some CU Scholar datasets as articles instead). An alternate strategy for pulling CU Scholar datasets from OpenAlex is to extract all of the CU Scholar works indexed by OpenAlex, and then parse the "landing_page_url" field for the word "data":
@@ -76,8 +87,8 @@ cu_scholar_works <- oa_fetch(
   verbose = TRUE)
 
 
-# extract cu scholar datasets by searching for "data" within the "landing_page_url" field,
-# i.e. using a url parsing strategy
+# extract cu scholar datasets by searching for "data" within 
+# the "landing_page_url" field, i.e. using a url parsing strategy
 cu_scholar_datasets_alternate<-cu_scholar_works %>% 
                                 filter(str_detect(landing_page_url, "data"))
 ```
@@ -88,7 +99,8 @@ We'll write out `cu_scholar_datasets_alternate` to disk as "cu_scholar_datasets_
 
 ```{r}
 # writes "cu_scholar_datasets_alternate" to disk
-write_csv(cu_scholar_datasets_alternate, "data-outputs/cu_scholar_datasets_alternate.csv")
+write_csv(cu_scholar_datasets_alternate, 
+          "data-outputs/cu_scholar_datasets_alternate.csv")
 ```
 
 # Datasets authored by CU researchers in other venues
@@ -98,7 +110,8 @@ To extract datasets published by CU researchers in any location, we'll extract C
 ```{r}
 #| message: false
 #| cache: true
-# extracts CU Boulder institutional information and assigns to "cu_boulder_metadata"
+# extracts CU Boulder institutional information and assigns to
+# "cu_boulder_metadata"
 cu_boulder_metadata <- 
   oa_fetch(
     entity = "institutions",
@@ -133,13 +146,15 @@ all_cu_datasets_sans_cuscholar<-
    filter(source_display_name!="CU Scholar (University of Colorado Boulder)")
 
 # writes "all_cu_datasets_sans_cuscholar" to disk
-write_csv(all_cu_datasets_sans_cuscholar, "data-outputs/all_cu_datasets_sans_cuscholar.csv")
+write_csv(all_cu_datasets_sans_cuscholar, 
+          "data-outputs/all_cu_datasets_sans_cuscholar.csv")
 ```
 
 We can combine the search results from the CU Scholar repository search (`cu_scholar_datasets_alternate`) with the results from the author search that excludes CU Scholar results (`all_cu_datasets_sans_cuscholar`) to generate a more comprehensive dataset that includes OpenAlex-indexed datasets from CU Scholar and other repositories that were published by CU authors (`cu_datasets_combined`):
 
 ```{r}
-# dataset that combines "cu_scholar_datasets_alternate" and "all_cu_datasets_sans_cuscholar"
+# dataset that combines "cu_scholar_datasets_alternate" and
+# "all_cu_datasets_sans_cuscholar"
 cu_datasets_combined<-
   bind_rows(cu_scholar_datasets_alternate, all_cu_datasets_sans_cuscholar) %>%
     distinct(id, .keep_all = TRUE)
@@ -149,7 +164,8 @@ We'll write this dataset (which has 5590 records) to disk as "cu_datasets_combin
 
 ```{r}
 # writes "cu_datasets_combined" to disk
-write_csv(cu_datasets_combined, "data-outputs/cu_datasets_combined.csv")
+write_csv(cu_datasets_combined, 
+          "data-outputs/cu_datasets_combined.csv")
 ```
 
 It's important to note that this is still likely a significant under-count of the number of datasets associated with CU researchers, since researchers do not always list institutional affiliations in the relevant metadata field when depositing datasets in external repositories (especially if there are many authors, and the CU author is not the depositing or corresponding author). We can try to build a more inclusive search net by extracting a dataset of CU-affiliated researchers (with researcher IDs), and then searching for datasets associated with these individuals. In particular, we'll use the "last_known_institutions.id" attribute to return IDs for authors whose last known publication is associated with CU Boulder:
@@ -214,21 +230,25 @@ cu_researcher_datasets_master <- author_chunks %>%
 We will write `cu_researcher_datasets_master` to disk:
 
 ```{r}
-write_csv(cu_researcher_datasets_master, "data-outputs/cu_researcher_datasets_master.csv")
+write_csv(cu_researcher_datasets_master, 
+          "data-outputs/cu_researcher_datasets_master.csv")
 ```
 
 To create the most comprehensive dataset of published datasets associated with CU, we'll append the records in `cu_researcher_datasets_master` and those in `cu_datasets_combined`, while removing any duplicated records. We'll assign the resulting dataset to `cu_datasets_comprehensive`.
 
 ```{r}
-# creates "cu_datasets_comprehensive" by appending "cu_researcher_datasets_master" and "cu_datasets_combined"
-cu_datasets_comprehensive<-bind_rows(cu_researcher_datasets_master, cu_datasets_combined) %>% 
+# creates "cu_datasets_comprehensive" by appending 
+# "cu_researcher_datasets_master" and "cu_datasets_combined"
+cu_datasets_comprehensive<-
+  bind_rows(cu_researcher_datasets_master, cu_datasets_combined) %>% 
   distinct(id, .keep_all = TRUE)
 ```
 
 We'll generate a new column, named "authors", that prints all of the authors associated with a dataset, separated by a semicolon (currently, the author metadata is nested within the "authorships" column, and therefore inaccessible when exporting the data from R):
 
 ```{r}
-# creates columns for author name, open alex id, and ORCID id from author data in "authorships" column
+# creates columns for author name, open alex id, and ORCID id from 
+# author data in "authorships" column
 cu_datasets_comprehensive<-cu_datasets_comprehensive %>% 
   mutate(
     authors_name=map_chr(authorships,
@@ -296,7 +316,8 @@ We'll now write out `cu_datasets_comprehensive` to disk:
 
 ```{r}
 # writes "cu_datasets_comprehensive" to disk
-write_csv(cu_datasets_comprehensive, "data-outputs/cu_datasets_comprehensive.csv")
+write_csv(cu_datasets_comprehensive, 
+          "data-outputs/cu_datasets_comprehensive.csv")
 ```
 
 # Exploratory Analysis and Visualization
@@ -321,7 +342,8 @@ top_papers_dataset<-
 
 # plots top 5 papers
 top_papers_plot<-
-  ggplot(data=top_papers_dataset, aes(x=cited_by_count, y=fct_reorder(wrapped_title, cited_by_count)))+
+  ggplot(data=top_papers_dataset, 
+         aes(x=cited_by_count, y=fct_reorder(wrapped_title, cited_by_count)))+
   geom_col(fill="#003A70", width=0.6)+
   geom_text(aes(label=cited_by_count), hjust=-0.2, fontface="bold", size=4)+
   theme_minimal(base_size=13)+
@@ -348,7 +370,8 @@ top_papers_plot
 Now, we'll examine the number of CU-authored datasets by repository/publication venue:
 
 ```{r}
-# generates dataset that indicates number of datasets published in each repo/venue
+# generates dataset that indicates number of datasets published in 
+# each repo/venue
 dataset_count_by_repo<-
   cu_datasets_comprehensive %>% 
   group_by(source_display_name) %>% 
@@ -364,7 +387,8 @@ dataset_count_by_repo
 We'll write out the dataset to disk as "dataset_count_by_repo.csv":
 
 ```{r}
-write_csv(dataset_count_by_repo, "data-outputs/dataset_count_by_repo.csv")
+write_csv(dataset_count_by_repo, 
+          "data-outputs/dataset_count_by_repo.csv")
 ```
 
 We'll also create a chart that displays the 20 most commonly used repositories:
@@ -405,10 +429,14 @@ top_repos_plot
 Next, we will generate a dataset that indicates the total number of dataset publications associated with each CU author, assigned to `cu_researcher_dataset_publication_number`:
 
 ```{r}
-# generates dataset that indicates number of dataset publications for each CU author
+# generates dataset that indicates number of dataset publications for 
+# each CU author
 cu_researcher_dataset_publication_number<-
   cu_datasets_comprehensive %>% 
-separate_longer_delim(cols=c(cu_authors_oa_id, cu_authors_name, id), delim="; ") %>%
+separate_longer_delim(cols=c(cu_authors_oa_id, 
+                             cu_authors_name, 
+                             id), 
+                      delim="; ") %>%
    mutate(cu_authors_oa_id = trimws(cu_authors_oa_id)) %>%
   distinct() %>% 
   group_by(cu_authors_oa_id)  %>% 
@@ -427,7 +455,8 @@ We will write out the full dataset to disk:
 
 ```{r}
 # writes "cu_researcher_dataset_publication_number" to disk
-write_csv(cu_researcher_dataset_publication_number, "data-outputs/cu_researcher_dataset_publication_number.csv")
+write_csv(cu_researcher_dataset_publication_number, 
+          "data-outputs/cu_researcher_dataset_publication_number.csv")
 ```
 
 Below, we plot the ten 10 CU researchers with the highest number of total dataset publications in any venue:
@@ -443,7 +472,8 @@ top_cu_dataset_publishers<-
 
 # generates plot based on "top_cu_dataset_publishers"
 cu_researcher_dataset_publication_number_plot<-
-  ggplot(data=top_cu_dataset_publishers, aes(x=dataset_count, y=fct_reorder(wrapped_title, dataset_count)))+
+  ggplot(data=top_cu_dataset_publishers, 
+         aes(x=dataset_count, y=fct_reorder(wrapped_title, dataset_count)))+
   geom_col(fill="#003A70", width=0.6)+
   geom_text(aes(label=dataset_count), hjust=-0.2, fontface="bold", size=4)+
   theme_minimal(base_size=13)+
@@ -470,7 +500,10 @@ Finally, we will generate a dataset of the total number of dataset citations for
 # generates dataset that indicates CU authors and their total dataset citations
 cu_researcher_dataset_citations<-
   cu_datasets_comprehensive %>% 
-  separate_longer_delim(cols=c(cu_authors_oa_id, cu_authors_name, id), delim="; ") %>%
+  separate_longer_delim(cols=c(cu_authors_oa_id, 
+                               cu_authors_name, 
+                               id), 
+                        delim="; ") %>%
   mutate(cu_authors_oa_id = trimws(cu_authors_oa_id)) %>%
   distinct() %>% 
   group_by(cu_authors_oa_id)  %>% 
@@ -487,7 +520,8 @@ We'll write `cu_researcher_dataset_citations` to disk:
 
 ```{r}
 # writes "cu_researcher_dataset_citations" to disk
-write_csv(cu_researcher_dataset_citations, "data-outputs/cu_researcher_dataset_citations.csv")
+write_csv(cu_researcher_dataset_citations, 
+          "data-outputs/cu_researcher_dataset_citations.csv")
 ```
 
 Below, we create a plot that shows CU researchers with the most dataset citations:
@@ -503,9 +537,14 @@ cu_authors_with_most_data_citations<-
 
 # generates plot based on "top_repos_dataset"
 cu_researcher_dataset_publication_number_plot<-
-  ggplot(data=cu_authors_with_most_data_citations, aes(x=number_of_dataset_citations, y=fct_reorder(wrapped_title, number_of_dataset_citations)))+
+  ggplot(data=cu_authors_with_most_data_citations, 
+         aes(x=number_of_dataset_citations, 
+             y=fct_reorder(wrapped_title, number_of_dataset_citations)))+
   geom_col(fill="#003A70", width=0.6)+
-  geom_text(aes(label=number_of_dataset_citations), hjust=-0.2, fontface="bold", size=4)+
+  geom_text(aes(label=number_of_dataset_citations), 
+            hjust=-0.2, 
+            fontface="bold", 
+            size=4)+
   theme_minimal(base_size=13)+
   labs(
     title="CU Researchers with most dataset citations",
