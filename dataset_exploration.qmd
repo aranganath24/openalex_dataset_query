@@ -64,7 +64,7 @@ We will write this dataset to a file named *cu_scholar_datasets_base.csv*:
 write_csv(cu_scholar_datasets_base, "data-outputs/cu_scholar_datasets_base.csv")
 ```
 
-`cu_scholar_datasets_base` contains 181 records/datasets, which is significantly less than the 578 datasets reported in the latest State of Open report. This might be driven by a mismatch between how objects are classified in CU Scholar and how they are classified by Open Alex (i.e. the "dataset" filter might be overly restrictive if OpenAlex interprets some CU Scholar datasets as articles instead). An alternate strategy for pulling CU Scholar datasets from OpenAlex is to extract all of the CU Scholar works indexed by OpenAlex, and then parse the "landing_page_url" field for the word "data":
+`cu_scholar_datasets_base` contains 470 records/datasets, which is significantly less than the 657 datasets reported in the latest State of Open report. This might be driven by a mismatch between how objects are classified in CU Scholar and how they are classified by Open Alex (i.e. the "dataset" filter might be overly restrictive if OpenAlex interprets some CU Scholar datasets as articles instead). An alternate strategy for pulling CU Scholar datasets from OpenAlex is to extract all of the CU Scholar works indexed by OpenAlex, and then parse the "landing_page_url" field for the word "data":
 
 ```{r}
 #| message: false
@@ -82,7 +82,7 @@ cu_scholar_datasets_alternate<-cu_scholar_works %>%
                                 filter(str_detect(landing_page_url, "data"))
 ```
 
-The `cu_scholar_datasets_alternate` data frame contains 317 records, which is substantially more than `cu_scholar_datasets_base`; it looks like many of the "Media and Climate Change" datasets were classified by OpenAlex as "articles" or "other", so they were dropped when using the "dataset" filter but picked up when parsing the landing page urls. However, the number of datasets in `cu_scholar_datasets_alternate` is still well well short of the number of datasets documented in the State of Open report. It could be useful to cross-reference the dataset(s) of CU Scholar datasets from OpenAlex with the dataset used for State of Open to try and identify which datasets are "missing", and why they are not being picked up by OpenAlex.
+The `cu_scholar_datasets_alternate` data frame contains 533 records, which is substantially more than `cu_scholar_datasets_base`; it looks like many of the "Media and Climate Change" datasets were classified by OpenAlex as "articles" or "other", so they were dropped when using the "dataset" filter but picked up when parsing the landing page urls. However, the number of datasets in `cu_scholar_datasets_alternate` is still well well short of the number of datasets documented in the State of Open report. It could be useful to cross-reference the dataset(s) of CU Scholar datasets from OpenAlex with the dataset used for State of Open to try and identify which datasets are "missing", and why they are not being picked up by OpenAlex.
 
 We'll write out `cu_scholar_datasets_alternate` to disk as "cu_scholar_datasets_alternate.csv":
 
@@ -115,14 +115,16 @@ all_cu_datasets <- oa_fetch(
   verbose = TRUE)
 ```
 
-The resulting dataset, `all_cu_datasets`, contains 2577 datasets from 54 unique repositories. The repositories in the dataset are the following:
+The resulting dataset, `all_cu_datasets`, contains 5171 datasets from 74 unique repositories. The repositories in the dataset are the following:
 
 ```{r}
 # prints unique repos in "all_cu_datasets"
 unique(all_cu_datasets$source_display_name)
 ```
 
-This search picks up a relatively small number (13) of CU Scholar datasets; it's not clear why, but OpenAlex may be having issues with reading the institutional ID of the depositor when its entered into DataCite. It may also be driven by the fact that we only started explicitly tagging the institutional affiliation of the depositor in DataCite relatively recently. We can delete the CU Scholar records in `all_cu_datasets` to generate a new dataset of CU-researcher-authored dataset publications in venues outside CU Scholar (`all_cu_datasets_sans_cuscholar`), which we'll write out to disk as "all_cu_datasets_sans_cuscholar.csv"):
+This search picks up a relatively small number (29) of CU Scholar datasets; it's not clear why, but OpenAlex may be having issues with reading the institutional ID of the depositor when it is entered into DataCite. It may also be driven by the fact that we only started explicitly tagging the institutional affiliation of the depositor in DataCite relatively recently.
+
+We can delete the CU Scholar records in `all_cu_datasets` to generate a new dataset of CU-researcher-authored dataset publications in venues outside CU Scholar (`all_cu_datasets_sans_cuscholar`), which we'll write out to disk as "all_cu_datasets_sans_cuscholar.csv"):
 
 ```{r}
 # extracts cu-authored datasets in repositories besides cu scholar
@@ -143,7 +145,7 @@ cu_datasets_combined<-
     distinct(id, .keep_all = TRUE)
 ```
 
-We'll write this dataset (which has 2577 records) to disk as "cu_datasets_combined.csv":
+We'll write this dataset (which has 5590 records) to disk as "cu_datasets_combined.csv":
 
 ```{r}
 # writes "cu_datasets_combined" to disk
